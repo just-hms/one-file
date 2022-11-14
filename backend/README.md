@@ -43,7 +43,7 @@ Authorization: Bearer "the_actual_token"
 Host: url/user/:userID/file
 ```
 
-### 🔑 GET /user/:userID/file
+### 🔑 GET /file
 
 request
 
@@ -56,7 +56,7 @@ response ✔️ -> status : `200`
 ```
 
 
-response ❌ -> status : `401` | `400` 
+response ❌ -> status : `401` | `400` | `404`
 
 ```json
 {
@@ -64,7 +64,7 @@ response ❌ -> status : `401` | `400`
 }
 ```
 
-### 🔑 PUT /user/:userID/file
+### 🔑 PUT /file
 
 ```json
 {

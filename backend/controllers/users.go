@@ -22,7 +22,7 @@ func Login(c *gin.Context) {
 	}
 
 	user := models.User{}
-	err := models.DB().Model(models.User{}).Where("username = ?", input.Username).Take(&user).Error
+	err := models.DB().Where("username = ?", input.Username).Take(&user).Error
 
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})

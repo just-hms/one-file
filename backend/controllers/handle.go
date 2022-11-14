@@ -14,8 +14,15 @@ func HandleRequests() {
 
 	router.GET("/", Base)
 
-	users := router.Group("/users")
+	users := router.Group("/user")
 	users.GET("/login", Login)
+
+	files := router.Group("/file")
+
+	files.GET("", RequireAuth, GetFile)
+	files.PUT("", RequireAuth, ModifyFile)
+
+	router.POST("/user", RequireAdmin, Create)
 
 	router.Run()
 }
