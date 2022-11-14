@@ -45,7 +45,8 @@ func TestLoginHandler(t *testing.T) {
 
 func TestAuth(t *testing.T) {
 
-	mockToken, _ := auth.CreateToken(1)
+	// create a token given the dummy user's ID
+	mockToken, _ := auth.CreateToken(2)
 
 	mockResponse := `{"res":"ok"}`
 
@@ -68,6 +69,8 @@ func TestAuth(t *testing.T) {
 }
 
 func TestAdmin(t *testing.T) {
+
+	// create a token given the admin's ID
 
 	mockToken, _ := auth.CreateToken(1)
 

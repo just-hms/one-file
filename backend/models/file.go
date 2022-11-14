@@ -8,8 +8,5 @@ type File struct {
 	gorm.Model
 
 	Content string
-
-	// belongs to the user
-	UserID int
-	User   User
+	UserID  uint
 }
