@@ -9,6 +9,8 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+// given an userID
+// returns a token
 func CreateToken(userID uint) (string, error) {
 	claims := jwt.MapClaims{}
 
@@ -21,6 +23,8 @@ func CreateToken(userID uint) (string, error) {
 	return token.SignedString([]byte(constants.API_SECRET))
 }
 
+// extract the userID from which the token was generated
+// return an error if the token is not valid or expired
 func ExtractTokenID(tokenString string) (uint, error) {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

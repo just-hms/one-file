@@ -48,7 +48,7 @@ func Build() {
 	password, _ := auth.HashAndSalt(constants.ADMIN_PASSWORD)
 
 	DB().Create(&User{
-		Email:    constants.ADMIN_EMAIL,
+		Username: constants.ADMIN_USERNAME,
 		Password: password,
 	})
 

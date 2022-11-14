@@ -15,16 +15,17 @@ import (
 	"github.com/go-playground/assert"
 )
 
+// test that given a correct input the system returns a token
 func TestLoginHandler(t *testing.T) {
 
-	mockRegex := `{"data":".*"}`
+	mockRegex := `{"token":".*"}`
 
 	router := gin.Default()
 
 	router.POST("/login", controllers.Login)
 
 	loginInput := controllers.LoginInput{
-		Email:    constants.ADMIN_EMAIL,
+		Username: constants.ADMIN_USERNAME,
 		Password: constants.ADMIN_PASSWORD,
 	}
 
@@ -46,16 +47,15 @@ func TestAuth(t *testing.T) {
 
 	mockToken, _ := auth.CreateToken(1)
 
-	mockResponse := `{"data":"ok"}`
+	mockResponse := `{"res":"ok"}`
 
 	router := gin.Default()
 
 	router.GET("/auth", controllers.RequireAuth, func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "ok"})
+		c.JSON(http.StatusOK, gin.H{"res": "ok"})
 	})
 
 	req, _ := http.NewRequest("GET", "/auth", &bytes.Buffer{})
-
 	req.Header.Add("Authorization", "Bearer "+string(mockToken))
 
 	w := httptest.NewRecorder()

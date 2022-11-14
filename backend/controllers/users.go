@@ -9,23 +9,23 @@ import (
 )
 
 type LoginInput struct {
-	Email    string `json:"Email" binding:"required"`
-	Password string `json:"Password" binding:"required"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 func Login(c *gin.Context) {
 
 	input := LoginInput{}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
 	user := models.User{}
-	err := models.DB().Model(models.User{}).Where("email = ?", input.Email).Take(&user).Error
+	err := models.DB().Model(models.User{}).Where("username = ?", input.Username).Take(&user).Error
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -34,10 +34,10 @@ func Login(c *gin.Context) {
 	token, err := auth.CreateToken(user.ID)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": token})
+	c.JSON(http.StatusOK, gin.H{"token": token})
 
 }
