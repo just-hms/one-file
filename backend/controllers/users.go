@@ -17,7 +17,7 @@ func Login(c *gin.Context) {
 
 	input := LoginInput{}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -39,5 +39,41 @@ func Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
+
+}
+
+type CreateInput struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+func Create(c *gin.Context) {
+
+	input := CreateInput{}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := models.DB().Where("email = ?", input.Username).First(&models.User{}).Error; err == nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Username already used"})
+		return
+	}
+
+	password, err := auth.HashAndSalt(input.Password)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user := models.User{
+		Username: input.Username,
+		Password: password,
+	}
+
+	models.DB().Create(&user)
+
+	c.JSON(http.StatusCreated, gin.H{})
 
 }

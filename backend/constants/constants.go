@@ -5,4 +5,8 @@ const API_SECRET = "super_secret"
 
 const ADMIN_USERNAME = "admin"
 const ADMIN_PASSWORD = "super_secret_password"
+
+const DUMMY_USERNAME = "dummy"
+const DUMMY_PASSWORD = "dummy_password"
+
 const DATABASE_NAME = "one-file.db"

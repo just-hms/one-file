@@ -50,6 +50,7 @@ func Build() {
 	DB().Create(&User{
 		Username: constants.ADMIN_USERNAME,
 		Password: password,
+		IsAdmin:  true,
 	})
 
 }

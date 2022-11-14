@@ -25,7 +25,7 @@ response ✔️ -> status : `200`
 }
 ```
 
-response ❌ -> status : `401`
+response ❌ -> status : `401` | `400`
 
 ```json
 {
@@ -56,7 +56,7 @@ response ✔️ -> status : `200`
 ```
 
 
-response ❌ -> status : `401`
+response ❌ -> status : `401` | `400` 
 
 ```json
 {
@@ -80,7 +80,7 @@ response ✔️ -> status : `200`
 }
 ```
 
-response ❌ -> status : `401`
+response ❌ -> status : `401` | `400`
 
 ```json
 {
@@ -101,7 +101,7 @@ response ❌ -> status : `401`
 
 response ✔️ -> status : `201`
 
-response ❌ -> status : `403` | `401` 
+response ❌ -> status : `403` | `401` | `400` 
 
 ```json
 {

@@ -66,3 +66,27 @@ func TestAuth(t *testing.T) {
 	assert.Equal(t, string(responseData), mockResponse)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func TestAdmin(t *testing.T) {
+
+	mockToken, _ := auth.CreateToken(1)
+
+	mockResponse := `{"res":"ok"}`
+
+	router := gin.Default()
+
+	router.GET("/auth", controllers.RequireAuth, func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"res": "ok"})
+	})
+
+	req, _ := http.NewRequest("GET", "/auth", &bytes.Buffer{})
+	req.Header.Add("Authorization", "Bearer "+string(mockToken))
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	responseData, _ := ioutil.ReadAll(w.Body)
+
+	assert.Equal(t, string(responseData), mockResponse)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
