@@ -16,7 +16,8 @@ import (
 
 func TestFileGet(t *testing.T) {
 
-	initTest()
+	models.Build()
+	gin.SetMode(gin.ReleaseMode)
 
 	createUserInput := CreateUserInput{
 		Username: "another_dummy_user_with_a_file",
@@ -50,7 +51,8 @@ func TestFileGet(t *testing.T) {
 
 func TestFileMod(t *testing.T) {
 
-	initTest()
+	models.Build()
+	gin.SetMode(gin.ReleaseMode)
 
 	createUserInput := CreateUserInput{
 		Username: "another_dummy_user_that_edit_a_file",

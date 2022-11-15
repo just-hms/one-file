@@ -3,7 +3,7 @@ package models
 import (
 	"one-file/internal/constants"
 	"one-file/pkg/auth"
-	"os"
+	"one-file/pkg/test"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -17,7 +17,7 @@ func connect() (db *gorm.DB) {
 	connection_string := ""
 	my_logger := logger.Default
 
-	if os.Getenv("testing") == "true" {
+	if test.IsTesting() {
 		connection_string = "file::memory:?cache=shared"
 		my_logger = logger.Discard
 	} else {

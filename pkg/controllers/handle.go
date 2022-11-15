@@ -3,6 +3,8 @@ package controllers
 import (
 	"net/http"
 
+	"one-file/pkg/middlewares"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -19,10 +21,10 @@ func HandleRequests() {
 
 	files := router.Group("/file")
 
-	files.GET("", RequireAuth, GetFile)
-	files.PUT("", RequireAuth, ModifyFile)
+	files.GET("", middlewares.RequireAuth, GetFile)
+	files.PUT("", middlewares.RequireAuth, ModifyFile)
 
-	router.POST("/user", RequireAdmin, CreateUser)
+	router.POST("/user", middlewares.RequireAdmin, CreateUser)
 
 	router.Run()
 }

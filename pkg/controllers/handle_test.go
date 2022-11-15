@@ -11,10 +11,14 @@ import (
 )
 
 func TestBaseHandler(t *testing.T) {
-	initTest()
+
+	gin.SetMode(gin.ReleaseMode)
+
 	mockResponse := `{"data":"Oh no! You found me!"}`
 
 	router := gin.Default()
+	gin.SetMode(gin.TestMode)
+
 	router.GET("/", Base)
 
 	req, _ := http.NewRequest("GET", "/", nil)

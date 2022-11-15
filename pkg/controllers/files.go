@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"one-file/pkg/middlewares"
 	"one-file/pkg/models"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ func GetFile(c *gin.Context) {
 		err     error
 	)
 
-	if user_id, err = extractTokenIDFromRequest(c); err != nil {
+	if user_id, err = middlewares.ExtractTokenIDFromRequest(c); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -55,7 +56,7 @@ func ModifyFile(c *gin.Context) {
 
 	// get the user id from the token
 
-	if user_id, err = extractTokenIDFromRequest(c); err != nil {
+	if user_id, err = middlewares.ExtractTokenIDFromRequest(c); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

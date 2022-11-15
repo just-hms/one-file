@@ -1,4 +1,4 @@
-package controllers
+package middlewares
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func extractTokenIDFromRequest(c *gin.Context) (uint, error) {
+func ExtractTokenIDFromRequest(c *gin.Context) (uint, error) {
 	authHeader := c.GetHeader("Authorization")
 
 	token := strings.TrimPrefix(authHeader, "Bearer ")
@@ -19,7 +19,7 @@ func extractTokenIDFromRequest(c *gin.Context) (uint, error) {
 
 func RequireAuth(c *gin.Context) {
 
-	if _, err := extractTokenIDFromRequest(c); err != nil {
+	if _, err := ExtractTokenIDFromRequest(c); err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -29,7 +29,7 @@ func RequireAuth(c *gin.Context) {
 
 func RequireAdmin(c *gin.Context) {
 
-	userID, err := extractTokenIDFromRequest(c)
+	userID, err := ExtractTokenIDFromRequest(c)
 
 	// check fo any errors
 	if err != nil {
