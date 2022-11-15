@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"net/http"
-	"one-file/auth"
-	"one-file/models"
+	"one-file/pkg/auth"
+	"one-file/pkg/models"
 
 	"github.com/gin-gonic/gin"
 )

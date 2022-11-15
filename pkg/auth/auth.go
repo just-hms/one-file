@@ -2,7 +2,7 @@ package auth
 
 import (
 	"fmt"
-	"one-file/constants"
+	"one-file/internal/constants"
 	"strconv"
 	"time"
 

@@ -1,8 +1,8 @@
 package models
 
 import (
-	"one-file/auth"
-	"one-file/constants"
+	"one-file/internal/constants"
+	"one-file/pkg/auth"
 	"os"
 
 	"gorm.io/driver/sqlite"

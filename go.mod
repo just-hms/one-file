@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/assert v1.2.1
 	github.com/go-playground/assert/v2 v2.2.0 // indirect

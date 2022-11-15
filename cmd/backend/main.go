@@ -1,8 +1,8 @@
 package main
 
 import (
-	"one-file/controllers"
-	"one-file/models"
+	"one-file/pkg/controllers"
+	"one-file/pkg/models"
 )
 
 func main() {
