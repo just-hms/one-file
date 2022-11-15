@@ -10,7 +10,5 @@ This is an executable that watches a file and upload it's changes to the server
 
 ## Update
 
-- a watcher is linked to a file in the system
-- if the file is open
-	- every 2 second a GET request is maid to the server to check if any update was maid
+every 2 second a GET request is made to the server to check if any update was made
  
