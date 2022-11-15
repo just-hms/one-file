@@ -44,7 +44,7 @@ func TestFileGet(t *testing.T) {
 	responseData, _ := ioutil.ReadAll(w.Body)
 
 	assert.Equal(t, string(responseData), mockResponse)
-	assert.Equal(t, http.StatusForbidden, w.Code)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestFileMod(t *testing.T) {
