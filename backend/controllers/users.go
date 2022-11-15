@@ -74,11 +74,14 @@ func CreateUser(c *gin.Context) {
 
 	models.DB().Create(&user)
 
-	// create an empty file and link it to the new user
+	// create an empty file
+	file := models.File{
+		Content: "",
+	}
+	models.DB().Save(&file)
 
-	models.DB().Model(&user).Association("File").Append(
-		&models.File{Content: ""},
-	)
+	// link it to the new user
+	models.DB().Model(&user).Association("File").Append(&file)
 
 	c.JSON(http.StatusCreated, gin.H{})
 
