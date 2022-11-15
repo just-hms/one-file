@@ -38,7 +38,7 @@ func RequireAdmin(c *gin.Context) {
 	}
 
 	var user = models.User{}
-	err = models.DB().Where("id = ? AND admin = TRUE", userID).First(&user).Error
+	err = models.DB().Where("id = ? AND is_admin = TRUE", userID).First(&user).Error
 
 	if err != nil || !user.IsAdmin {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

@@ -7,30 +7,56 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"one-file/auth"
-	"one-file/constants"
 	"one-file/controllers"
+	"one-file/models"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert"
 )
 
-// test that given a correct input the system returns a token
 func TestLoginHandler(t *testing.T) {
 
-	mockRegex := `{"token":".*"}`
-
-	router := gin.Default()
-
-	router.POST("/login", controllers.Login)
-
-	loginInput := controllers.LoginInput{
-		Username: constants.ADMIN_USERNAME,
-		Password: constants.ADMIN_PASSWORD,
+	// create an user
+	user := models.User{
+		Username: "dummy",
+		Password: "dummy_password",
 	}
 
-	json, _ := json.Marshal(loginInput)
+	models.DB().Create(&user)
 
+	correctMockRegex := `{"token":".*"}`
+
+	// authorized test
+
+	correctResponseData, wCorrect := loginRequest(controllers.LoginInput{
+		Username: user.Username,
+		Password: user.Password,
+	})
+
+	assert.MatchRegex(t, correctResponseData, correctMockRegex)
+	assert.Equal(t, http.StatusOK, wCorrect.Code)
+
+	// un authorized test
+
+	wrongMockResponse := `{"error":"record not found"}`
+	wrongResponseData, wWrong := loginRequest(controllers.LoginInput{
+		Username: "wrong",
+		Password: user.Password,
+	})
+
+	assert.Equal(t, wrongResponseData, wrongMockResponse)
+	assert.Equal(t, http.StatusUnauthorized, wWrong.Code)
+
+}
+
+// does a login request with the provided input
+// returns the response data
+func loginRequest(loginInput controllers.LoginInput) (string, *httptest.ResponseRecorder) {
+	router := gin.Default()
+	router.POST("/login", controllers.Login)
+
+	json, _ := json.Marshal(loginInput)
 	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer(json))
 
 	w := httptest.NewRecorder()
@@ -38,21 +64,72 @@ func TestLoginHandler(t *testing.T) {
 
 	responseData, _ := ioutil.ReadAll(w.Body)
 
-	assert.MatchRegex(t, string(responseData), mockRegex)
-	assert.Equal(t, http.StatusOK, w.Code)
-
+	return string(responseData), w
 }
 
-func TestAuth(t *testing.T) {
+func TestAuthMiddleWare(t *testing.T) {
 
-	// create a token given the dummy user's ID
-	mockToken, _ := auth.CreateToken(2)
+	user := models.User{
+		Username: "dummy_user",
+		Password: "dummy_password",
+	}
 
-	mockResponse := `{"res":"ok"}`
+	models.DB().Save(&user)
+	// authorized test
+	correctMockToken, _ := auth.CreateToken(user.ID)
+	correctMockResponse := `{"res":"ok"}`
 
+	correctResponseData, wCorrect := fakeRouter(correctMockToken, controllers.RequireAuth)
+
+	assert.Equal(t, correctResponseData, correctMockResponse)
+	assert.Equal(t, http.StatusOK, wCorrect.Code)
+
+	// unauthorized test
+
+	wrongMockToken := "something_wrong"
+	wrongMockResponse := `{"error":"Unauthorized"}`
+
+	wrongResponseData, wWrong := fakeRouter(wrongMockToken, controllers.RequireAuth)
+
+	assert.Equal(t, wrongResponseData, wrongMockResponse)
+	assert.Equal(t, http.StatusUnauthorized, wWrong.Code)
+}
+
+func TestAdminMiddleWare(t *testing.T) {
+
+	admin := models.User{
+		Username: "dummy_admin",
+		IsAdmin:  true,
+		Password: "dummy_password",
+	}
+
+	models.DB().Save(&admin)
+	// authorized test
+	correctMockToken, _ := auth.CreateToken(admin.ID)
+	correctMockResponse := `{"res":"ok"}`
+
+	correctResponseData, wCorrect := fakeRouter(correctMockToken, controllers.RequireAdmin)
+
+	assert.Equal(t, correctResponseData, correctMockResponse)
+	assert.Equal(t, http.StatusOK, wCorrect.Code)
+
+	// unauthorized test
+
+	wrongMockToken := "something_wrong"
+	wrongMockResponse := `{"error":"Unauthorized"}`
+
+	wrongResponseData, wWrong := fakeRouter(wrongMockToken, controllers.RequireAdmin)
+
+	assert.Equal(t, wrongResponseData, wrongMockResponse)
+	assert.Equal(t, http.StatusUnauthorized, wWrong.Code)
+}
+
+// given a token and a middleware, fakes a router and
+// returns the response and the response status
+func fakeRouter(mockToken string, middeware func(c *gin.Context)) (string, *httptest.ResponseRecorder) {
 	router := gin.Default()
 
-	router.GET("/auth", controllers.RequireAuth, func(c *gin.Context) {
+	router.GET("/auth", middeware, func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"res": "ok"})
 	})
 
@@ -64,32 +141,47 @@ func TestAuth(t *testing.T) {
 
 	responseData, _ := ioutil.ReadAll(w.Body)
 
-	assert.Equal(t, string(responseData), mockResponse)
-	assert.Equal(t, http.StatusOK, w.Code)
+	return string(responseData), w
+
 }
 
-func TestAdmin(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 
-	// create a token given the admin's ID
+	createUserInput := controllers.CreateUserInput{
+		Username: "another_dummy_user",
+		Password: "another_dummy_user",
+	}
 
-	mockToken, _ := auth.CreateToken(1)
+	correctMockResponse := `{}`
+	correctResponseData, wCorrect := createUserRequest(createUserInput)
 
-	mockResponse := `{"res":"ok"}`
+	assert.Equal(t, correctResponseData, correctMockResponse)
+	assert.Equal(t, http.StatusCreated, wCorrect.Code)
+
+	// second request
+
+	wrongMockResponse := `{"error":"Username already used"}`
+	wrongResponseData, wWrong := createUserRequest(createUserInput)
+
+	assert.Equal(t, wrongResponseData, wrongMockResponse)
+	assert.Equal(t, http.StatusForbidden, wWrong.Code)
+
+}
+
+// does a login request with the provided input
+// returns the response data
+func createUserRequest(createUserInput controllers.CreateUserInput) (string, *httptest.ResponseRecorder) {
 
 	router := gin.Default()
+	router.POST("/user", controllers.CreateUser)
 
-	router.GET("/auth", controllers.RequireAuth, func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"res": "ok"})
-	})
-
-	req, _ := http.NewRequest("GET", "/auth", &bytes.Buffer{})
-	req.Header.Add("Authorization", "Bearer "+string(mockToken))
+	json, _ := json.Marshal(createUserInput)
+	req, _ := http.NewRequest("POST", "/user", bytes.NewBuffer(json))
 
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
 	responseData, _ := ioutil.ReadAll(w.Body)
 
-	assert.Equal(t, string(responseData), mockResponse)
-	assert.Equal(t, http.StatusOK, w.Code)
+	return string(responseData), w
 }

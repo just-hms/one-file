@@ -1,6 +1,6 @@
 # List of all available APIs divided in
 
-- [text](#free-to-use) : blank
+- [Free](#free-to-use) : blank
 - [Require Login](#🔑-require-login) : 🔑
 - [Require Admin](#🛠️-require-admin) : 🛠️
 
@@ -100,6 +100,10 @@ response ❌ -> status : `401` | `400`
 ```
 
 response ✔️ -> status : `201`
+
+```json
+{}
+```
 
 response ❌ -> status : `403` | `401` | `400` 
 

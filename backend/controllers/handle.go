@@ -22,7 +22,7 @@ func HandleRequests() {
 	files.GET("", RequireAuth, GetFile)
 	files.PUT("", RequireAuth, ModifyFile)
 
-	router.POST("/user", RequireAdmin, Create)
+	router.POST("/user", RequireAdmin, CreateUser)
 
 	router.Run()
 }

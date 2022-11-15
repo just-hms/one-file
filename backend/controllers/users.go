@@ -42,20 +42,20 @@ func Login(c *gin.Context) {
 
 }
 
-type CreateInput struct {
+type CreateUserInput struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-func Create(c *gin.Context) {
+func CreateUser(c *gin.Context) {
 
-	input := CreateInput{}
+	input := CreateUserInput{}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := models.DB().Where("email = ?", input.Username).First(&models.User{}).Error; err == nil {
+	if err := models.DB().Where("username = ?", input.Username).First(&models.User{}).Error; err == nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Username already used"})
 		return
 	}
