@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -25,9 +24,6 @@ func TestFileGet(t *testing.T) {
 
 	// create a user with a linked file
 	createUserRequest(createUserInput)
-
-	result := models.DB().Find(&[]models.File{})
-	fmt.Println(result.RowsAffected)
 
 	// get the created user from the db
 	user := models.User{}
@@ -66,7 +62,7 @@ func TestFileMod(t *testing.T) {
 	models.DB().Last(&user)
 
 	mockToken, _ := auth.CreateToken(user.ID)
-	mockResponse := `content`
+	mockResponse := `{"file":"test_content"}`
 
 	router := gin.Default()
 	router.GET("/file", controllers.GetFile)
@@ -77,25 +73,25 @@ func TestFileMod(t *testing.T) {
 		Content: "test_content",
 	})
 
-	req, _ := http.NewRequest("PUT", "/file", bytes.NewBuffer(json))
-	req.Header.Add("Authorization", "Bearer "+string(mockToken))
+	modRequest, _ := http.NewRequest("PUT", "/file", bytes.NewBuffer(json))
+	modRequest.Header.Add("Authorization", "Bearer "+string(mockToken))
 
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
+	wMod := httptest.NewRecorder()
+	router.ServeHTTP(wMod, modRequest)
 
 	// get the modified file
 
-	req2, _ := http.NewRequest("GET", "/file", &bytes.Buffer{})
-	req.Header.Add("Authorization", "Bearer "+string(mockToken))
+	getRequest, _ := http.NewRequest("GET", "/file", &bytes.Buffer{})
+	getRequest.Header.Add("Authorization", "Bearer "+string(mockToken))
 
 	// flush output
-	ioutil.ReadAll(w.Body)
+	ioutil.ReadAll(wMod.Body)
 
-	w2 := httptest.NewRecorder()
-	router.ServeHTTP(w, req2)
+	wGet := httptest.NewRecorder()
+	router.ServeHTTP(wMod, getRequest)
 
-	responseData, _ := ioutil.ReadAll(w.Body)
+	responseData, _ := ioutil.ReadAll(wMod.Body)
 
 	assert.Equal(t, string(responseData), mockResponse)
-	assert.Equal(t, http.StatusForbidden, w2.Code)
+	assert.Equal(t, http.StatusOK, wGet.Code)
 }
