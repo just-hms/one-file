@@ -4,7 +4,7 @@
 - [Require Login](#🔑-require-login) : 🔑
 - [Require Admin](#🛠️-require-admin) : 🛠️
 
-# Free to use
+## Free to use
 
 ### `GET` /user/login
 
