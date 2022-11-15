@@ -1,10 +1,9 @@
-package apitest
+package controllers
 
 import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"one-file/pkg/controllers"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -12,11 +11,11 @@ import (
 )
 
 func TestBaseHandler(t *testing.T) {
-
+	initTest()
 	mockResponse := `{"data":"Oh no! You found me!"}`
 
 	router := gin.Default()
-	router.GET("/", controllers.Base)
+	router.GET("/", Base)
 
 	req, _ := http.NewRequest("GET", "/", nil)
 

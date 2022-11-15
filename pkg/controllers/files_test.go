@@ -1,4 +1,4 @@
-package apitest
+package controllers
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"one-file/pkg/auth"
-	"one-file/pkg/controllers"
 	"one-file/pkg/models"
 	"testing"
 
@@ -17,7 +16,9 @@ import (
 
 func TestFileGet(t *testing.T) {
 
-	createUserInput := controllers.CreateUserInput{
+	initTest()
+
+	createUserInput := CreateUserInput{
 		Username: "another_dummy_user_with_a_file",
 		Password: "another_dummy_user",
 	}
@@ -33,7 +34,7 @@ func TestFileGet(t *testing.T) {
 	mockResponse := `{"file":""}`
 
 	router := gin.Default()
-	router.GET("/file", controllers.GetFile)
+	router.GET("/file", GetFile)
 
 	req, _ := http.NewRequest("GET", "/file", &bytes.Buffer{})
 	req.Header.Add("Authorization", "Bearer "+string(mockToken))
@@ -49,7 +50,9 @@ func TestFileGet(t *testing.T) {
 
 func TestFileMod(t *testing.T) {
 
-	createUserInput := controllers.CreateUserInput{
+	initTest()
+
+	createUserInput := CreateUserInput{
 		Username: "another_dummy_user_that_edit_a_file",
 		Password: "another_dummy_user",
 	}
@@ -65,11 +68,11 @@ func TestFileMod(t *testing.T) {
 	mockResponse := `{"file":"test_content"}`
 
 	router := gin.Default()
-	router.GET("/file", controllers.GetFile)
-	router.PUT("/file", controllers.ModifyFile)
+	router.GET("/file", GetFile)
+	router.PUT("/file", ModifyFile)
 
 	// modify the empty file
-	json, _ := json.Marshal(controllers.ModifyFileInput{
+	json, _ := json.Marshal(ModifyFileInput{
 		Content: "test_content",
 	})
 
