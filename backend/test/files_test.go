@@ -3,6 +3,7 @@ package test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -25,12 +26,15 @@ func TestFileGet(t *testing.T) {
 	// create a user with a linked file
 	createUserRequest(createUserInput)
 
+	result := models.DB().Find(&[]models.File{})
+	fmt.Println(result.RowsAffected)
+
 	// get the created user from the db
 	user := models.User{}
 	models.DB().Last(&user)
 
 	mockToken, _ := auth.CreateToken(user.ID)
-	mockResponse := ``
+	mockResponse := `{"file":""}`
 
 	router := gin.Default()
 	router.GET("/file", controllers.GetFile)
